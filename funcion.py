@@ -7,7 +7,6 @@ class DashboardVentas:
         self.ruta = ruta_csv
         self.df = None
 
-    # CARGA DEL ARCHIVO
     def cargar_datos(self):
         """Carga el archivo CSV y crea columnas necesarias."""
         try:
@@ -21,7 +20,7 @@ class DashboardVentas:
         except Exception as e:
             print("Error al cargar el archivo:", e)
 
-    # ANÁLISIS DE DATOS
+    # Análisis de datos
     def total_por_mes(self):
         """Retorna ventas totales agrupadas por mes."""
         return self.df.groupby("Mes")["Ingreso_Total_COP"].sum()
@@ -34,3 +33,27 @@ class DashboardVentas:
         """Retorna el mes donde más se vendió."""
         totales = self.total_por_mes()
         return totales.idxmax(), totales.max()
+    
+    def estadisticas_cuartiles(self):
+        """Retorna estadísticas básicas y cuartiles de las ventas."""
+        if self.df is None:
+            return None
+
+        ingresos = self.df["Ingreso_Total_COP"]
+        estadisticas = {
+            "minimo": ingresos.min(),
+            "Q1": ingresos.quantile(0.25),
+            "mediana (Q2)": ingresos.median(),
+            "Q3": ingresos.quantile(0.75),
+            "maximo": ingresos.max(),
+            "promedio": ingresos.mean()
+        }
+        return estadisticas
+
+    def obtener_ingresos(self):
+        """Devuelve la columna de ingresos para gráficas."""
+        if self.df is None:
+            return None
+        return self.df["Ingreso_Total_COP"]
+
+    
