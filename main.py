@@ -1,55 +1,79 @@
 import pandas as pd
 from dashboard import Dashboard
 from graficas import Graficas
+from estadistica import Estadistica
 
-class Menu:
-    def __init__(self):
-        # Cargar CSV y crear Dashboard
-        self.df = pd.read_csv("practicas_panda/ventas_musica_cop .csv")
-        self.dashboard = Dashboard(self.df)
+df = pd.read_csv("practicas_panda/ventas_musica_cop.csv")
+df.columns = df.columns.str.strip()
 
-    def mostrar(self):
-        print("========== MENÚ PRINCIPAL ==========")
-        print("1. Mostrar Dashboard Completo")
-        print("2. Salir")
-        print("====================================")
+dashboard = Dashboard(df)
 
-    def ejecutar(self):
-        while True:
-            self.mostrar()
-            opcion = input(" Selecciona una opción: ").strip()
+while True:
+    print(" MENÚ PRINCIPAL ")
+    print("1. Ver Dashboard")
+    print("2. Estadísticas de una columna")
+    print("3. Salir")
+    
+    
+    opcion = input("Selecciona una opción: ").strip()
 
-            if opcion == "1":
-                print("Mostrando dashboard...")
-            
-                ingresos_plataforma = self.dashboard.ingresos_por_plataforma()
-                ingresos_genero = self.dashboard.ingresos_por_genero()
-                plataformas_mas_usada = self.dashboard.plataformas_mas_usadas()
-                genero_ventas = self.dashboard.ventas_por_genero()
-                genero_top, valor_top = self.dashboard.genero_top()
+    if opcion == "1":
+        ingresos_plataforma = dashboard.ingresos_por_plataforma()
+        ingresos_genero = dashboard.ingresos_por_genero()
+        plataformas_mas_usada = dashboard.plataformas_mas_usadas()
+        genero_ventas = dashboard.ventas_por_genero()
+        genero_top, valor_top = dashboard.genero_top()
 
-                # Mostrar tablas en terminal
-                print("===== INGRESOS POR PLATAFORMA =====")
-                print(ingresos_plataforma)
-                print("===== INGRESOS POR GÉNERO =====")
-                print(ingresos_genero)
-                print("===== PLATAFORMAS MÁS USADAS =====")
-                print(plataformas_mas_usada.to_list())
-                print("===== VENTAS POR GÉNERO =====")
-                print(genero_ventas)
-                print(f"\nEl género más vendido según ingresos: {genero_top} con {valor_top} COP\n")
+        print("--- Ingresos por Plataforma ---")
+        print(ingresos_plataforma)
 
-                # Mostrar gráficas
-                Graficas.grafica_completa(ingresos_plataforma, ingresos_genero, plataformas_mas_usada, genero_ventas)
+        print("--- Ingresos por Género ---")
+        print(ingresos_genero)
 
-            elif opcion == "2":
-                print("Saliendo del programa")
-                break
+        print("--- Plataformas más usadas ---")
+        print(plataformas_mas_usada.to_list())
 
-            else:
-                print(" Opción inválida. Por favor, ingresa 1 o 2.")
+        print("--- Ventas por Género ---")
+        print(genero_ventas)
 
+        print(f"Género más vendido: {genero_top} ({valor_top} COP)")
 
-if __name__ == "__main__":
-    menu = Menu()
-    menu.ejecutar()
+        Graficas.grafica_completa(
+            ingresos_plataforma,
+            ingresos_genero,
+            plataformas_mas_usada,
+            genero_ventas
+        )
+
+    elif opcion == "2":
+        
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        if not columnas_numericas:
+            print(" No hay columnas numéricas en el CSV.")
+            continue
+
+        print("Columnas numéricas disponibles:")
+        for i, col in enumerate(columnas_numericas):
+            print(f"{i+1}. {col}")
+
+        columna_input = input("Elige el número de la columna: ").strip()
+        if not columna_input.isdigit():
+            print("Opción inválida.")
+            continue
+
+        num = int(columna_input) - 1
+        if num < 0 or num >= len(columnas_numericas):
+            print("Opción inválida.")
+            continue
+
+        columna = columnas_numericas[num]
+        datos = df[columna]
+        est = Estadistica(datos)
+        est.mostrar()
+
+    elif opcion == "3":
+        print("Saliendo del programa...")
+        break
+
+    else:
+        print("Opción inválida. Intenta de nuevo.")
