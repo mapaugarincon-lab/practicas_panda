@@ -1,15 +1,20 @@
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import seaborn as sns
 
 class Graficas:
     @staticmethod
-    def grafica_completa(ingresos_plataforma ,ingresos_genero, plataformas_mas_usada, genero_ventas):
+    def grafica_completa(ingresos_plataforma, ingresos_genero, plataformas_mas_usada, genero_ventas):
         plt.figure(figsize=(16, 8))
+
 
         plt.subplot(2, 2, 1)
         plt.bar(ingresos_plataforma.index, ingresos_plataforma.values, color='violet')
         plt.title("Ingresos por Plataforma")
         plt.xticks(rotation=90)
         
+
         plt.subplot(2, 2, 2)
         plt.bar(ingresos_genero.index, ingresos_genero.values, color='lightcoral')
         plt.title("Ingresos por Género")
@@ -27,6 +32,9 @@ class Graficas:
         counts = counts.index.value_counts() 
         
         plt.bar(plataformas_mas_usada, [1]*len(plataformas_mas_usada), color='purple')  
+        plt.subplot(2, 2, 4)
+        counts = plataformas_mas_usada.value_counts()
+        plt.bar(counts.index, counts.values, color='purple')
         plt.title("Cantidad de Ventas por Plataforma")
         plt.xticks(rotation=90)
 
